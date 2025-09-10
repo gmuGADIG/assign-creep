@@ -1,0 +1,11 @@
+name: assign creep
+description: propagate issue assignments to parent issues
+
+# inputs:
+#   github_token:
+#     description: "Github access token to project and issues"
+#     required: yes
+
+runs:
+  using: node20
+  main: index.js
