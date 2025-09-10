@@ -28783,9 +28783,12 @@ const { data: parentIssue } = await octokit.request(
   { owner, repo, issue_number, headers }
 );
 
-console.log(parentIssue);
+//console.log(parentIssue);
 
-// for (const item of linkedIssues) {
-//   console.log(`Issue #${item.number} - relationship: ${item.relation_type}`);
-// }
+console.log(githubExports.context.payload);
+
+// await octokit.request(
+//     "POST /repos/{owner}/{repo}/issues/{issue_number}/assignees",
+//     { owner, repo, issue_number, assignees = [] }
+// );
 //# sourceMappingURL=index.js.map
