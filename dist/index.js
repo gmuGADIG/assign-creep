@@ -28771,9 +28771,11 @@ var githubExports = requireGithub();
 const token = process.env.GITHUB_TOKEN;
 const octokit = githubExports.getOctokit(token);
 
+// gather info from our context
 const { owner, repo } = githubExports.context.repo;
 const issue_number = githubExports.context.payload.issue.number;
 
+// find parent issue
 const headers = {
     accept: 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
@@ -28783,12 +28785,11 @@ const { data: parentIssue } = await octokit.request(
   { owner, repo, issue_number, headers }
 );
 
-//console.log(parentIssue);
+// find our "target", the person who just got assigned
+const target_login = githubExports.context.payload.assignee.login;
 
-console.log(githubExports.context.payload);
-
-// await octokit.request(
-//     "POST /repos/{owner}/{repo}/issues/{issue_number}/assignees",
-//     { owner, repo, issue_number, assignees = [] }
-// );
+await octokit.request(
+    "POST /repos/{owner}/{repo}/issues/{issue_number}/assignees",
+    { owner, repo, issue_number: parentIssue.number, assignees: [ target_login ] }
+);
 //# sourceMappingURL=index.js.map
