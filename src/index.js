@@ -6,9 +6,13 @@ const octokit = github.getOctokit(token);
 const { owner, repo } = github.context.repo;
 const issue_number = github.context.payload.issue.number;
 
+const headers = {
+    accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+};
 const { data: linkedIssues } = await octokit.request(
   "GET /repos/{owner}/{repo}/issues/{issue_number}/linked",
-  { owner, repo, issue_number }
+  { owner, repo, issue_number, headers }
 );
 
 for (const item of linkedIssues) {
