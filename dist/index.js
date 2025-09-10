@@ -14823,11 +14823,11 @@ function requireDecoratorHandler () {
 	return DecoratorHandler_1;
 }
 
-var headers;
+var headers$1;
 var hasRequiredHeaders;
 
 function requireHeaders () {
-	if (hasRequiredHeaders) return headers;
+	if (hasRequiredHeaders) return headers$1;
 	hasRequiredHeaders = 1;
 
 	const { kHeadersList, kConstruct } = requireSymbols$4();
@@ -15407,12 +15407,12 @@ function requireHeaders () {
 	  })
 	};
 
-	headers = {
+	headers$1 = {
 	  fill,
 	  Headers,
 	  HeadersList
 	};
-	return headers;
+	return headers$1;
 }
 
 var response;
@@ -28774,12 +28774,18 @@ const octokit = githubExports.getOctokit(token);
 const { owner, repo } = githubExports.context.repo;
 const issue_number = githubExports.context.payload.issue.number;
 
-const { data: linkedIssues } = await octokit.request(
-  "GET /repos/{owner}/{repo}/issues/{issue_number}/linked",
-  { owner, repo, issue_number }
+const headers = {
+    accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+};
+const { data: parentIssue } = await octokit.request(
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/parent",
+  { owner, repo, issue_number, headers }
 );
 
-for (const item of linkedIssues) {
-  console.log(`Issue #${item.number} - relationship: ${item.relation_type}`);
-}
+console.log(parentIssue);
+
+// for (const item of linkedIssues) {
+//   console.log(`Issue #${item.number} - relationship: ${item.relation_type}`);
+// }
 //# sourceMappingURL=index.js.map
