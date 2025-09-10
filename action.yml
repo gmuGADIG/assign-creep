@@ -8,4 +8,4 @@ description: propagate issue assignments to parent issues
 
 runs:
   using: node20
-  main: index.js
+  main: dist/index.js
