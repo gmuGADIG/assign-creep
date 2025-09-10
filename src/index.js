@@ -10,12 +10,14 @@ const headers = {
     accept: 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
 };
-const { data: linkedIssues } = await octokit.request(
-  "GET /repos/{owner}/{repo}/issues/{issue_number}/linked",
+const { data: parentIssue } = await octokit.request(
+  "GET /repos/{owner}/{repo}/issues/{issue_number}/parent",
   { owner, repo, issue_number, headers }
 );
 
-for (const item of linkedIssues) {
-  console.log(`Issue #${item.number} - relationship: ${item.relation_type}`);
-}
+console.log(parentIssue);
+
+// for (const item of linkedIssues) {
+//   console.log(`Issue #${item.number} - relationship: ${item.relation_type}`);
+// }
 
