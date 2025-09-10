@@ -7,20 +7,32 @@ const octokit = github.getOctokit(token);
 const { owner, repo } = github.context.repo;
 const issue_number = github.context.payload.issue.number;
 
-// find parent issue
-const headers = {
-    accept: 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28',
-};
-const { data: parentIssue } = await octokit.request(
-  "GET /repos/{owner}/{repo}/issues/{issue_number}/parent",
-  { owner, repo, issue_number, headers }
-);
+try {
+    // find parent issue
+    const headers = {
+        accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+    };
+    const { data: parentIssue } = await octokit.request(
+      "GET /repos/{owner}/{repo}/issues/{issue_number}/parent",
+      { owner, repo, issue_number, headers }
+    );
 
-// find our "target", the person who just got assigned
-const target_login = github.context.payload.assignee.login;
+    // find our "target", the person who just got assigned
+    const target_login = github.context.payload.assignee.login;
 
-await octokit.request(
-    "POST /repos/{owner}/{repo}/issues/{issue_number}/assignees",
-    { owner, repo, issue_number: parentIssue.number, assignees: [ target_login ] }
-);
+    await octokit.request(
+        "POST /repos/{owner}/{repo}/issues/{issue_number}/assignees",
+        { owner, repo, issue_number: parentIssue.number, assignees: [ target_login ] }
+    );
+} catch (error) {
+    if (error.status === 404) {
+        console.log("Caught a 404!");
+        console.log(`Issue #${issue_number} may not have a parent issue?`);
+
+        console.log("error data:");
+        console.log(error);
+    } else {
+        throw error;
+    }
+}

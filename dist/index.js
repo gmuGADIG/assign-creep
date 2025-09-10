@@ -14823,11 +14823,11 @@ function requireDecoratorHandler () {
 	return DecoratorHandler_1;
 }
 
-var headers$1;
+var headers;
 var hasRequiredHeaders;
 
 function requireHeaders () {
-	if (hasRequiredHeaders) return headers$1;
+	if (hasRequiredHeaders) return headers;
 	hasRequiredHeaders = 1;
 
 	const { kHeadersList, kConstruct } = requireSymbols$4();
@@ -15407,12 +15407,12 @@ function requireHeaders () {
 	  })
 	};
 
-	headers$1 = {
+	headers = {
 	  fill,
 	  Headers,
 	  HeadersList
 	};
-	return headers$1;
+	return headers;
 }
 
 var response;
@@ -28775,21 +28775,33 @@ const octokit = githubExports.getOctokit(token);
 const { owner, repo } = githubExports.context.repo;
 const issue_number = githubExports.context.payload.issue.number;
 
-// find parent issue
-const headers = {
-    accept: 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28',
-};
-const { data: parentIssue } = await octokit.request(
-  "GET /repos/{owner}/{repo}/issues/{issue_number}/parent",
-  { owner, repo, issue_number, headers }
-);
+try {
+    // find parent issue
+    const headers = {
+        accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+    };
+    const { data: parentIssue } = await octokit.request(
+      "GET /repos/{owner}/{repo}/issues/{issue_number}/parent",
+      { owner, repo, issue_number, headers }
+    );
 
-// find our "target", the person who just got assigned
-const target_login = githubExports.context.payload.assignee.login;
+    // find our "target", the person who just got assigned
+    const target_login = githubExports.context.payload.assignee.login;
 
-await octokit.request(
-    "POST /repos/{owner}/{repo}/issues/{issue_number}/assignees",
-    { owner, repo, issue_number: parentIssue.number, assignees: [ target_login ] }
-);
+    await octokit.request(
+        "POST /repos/{owner}/{repo}/issues/{issue_number}/assignees",
+        { owner, repo, issue_number: parentIssue.number, assignees: [ target_login ] }
+    );
+} catch (error) {
+    if (error.status === 404) {
+        console.log("Caught a 404!");
+        console.log(`Issue #${issue_number} may not have a parent issue?`);
+
+        console.log("error data:");
+        console.log(error);
+    } else {
+        throw error;
+    }
+}
 //# sourceMappingURL=index.js.map
