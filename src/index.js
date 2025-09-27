@@ -18,19 +18,15 @@ try {
       { owner, repo, issue_number, headers }
     );
 
+    console.log(parentIssue);
+
     // find our "target", the person who just got assigned
     const target_login = github.context.payload.assignee.login;
 
-    // find the other assignees to the parent issue
-    
-    const { assignees } = await octokit.request(
-        "GET /repos/{owner}/{repo}/issues/{issue_number}",
-        { owner, repo, issue_number: parentIssue.number }
-    );
-
+    // assign the target
     await octokit.request(
         "POST /repos/{owner}/{repo}/issues/{issue_number}/assignees",
-        { owner, repo, issue_number: parentIssue.number, assignees: [ ...assignees, target_login ] }
+        { owner, repo, issue_number: parentIssue.number, assignees: [ ...parentIssue.assignees.map(a => a.login), target_login ] }
     );
 } catch (error) {
     if (error.status === 404) {
